@@ -1,12 +1,14 @@
 import datetime
+from os import path
 
 import requests
+from openpyxl import Workbook, load_workbook
 
 API_KEY = 'fd85cfdc7442ada7956eea08fb30064a'
 API_URL = 'https://api.openweathermap.org/data/2.5/weather'
 UNITS = 'metric'
 LANG = 'ru'
-FILE_EXCEL = 'weather.xlsx'
+FILE_EXCEL = 'weather_data.xlsx'
 
 
 def get_weather(city):
@@ -60,6 +62,35 @@ def get_weather_desc(data):
     return desc
 
 
+def save_excel(data):
+    if data['cod'] == 200:
+        if path.exists(FILE_EXCEL):
+            wb = load_workbook(FILE_EXCEL)
+            ws = wb.active
+        else:
+            wb = Workbook()
+            ws = wb.active
+            ws.title = 'Статистика запросов'
+            ws.append([
+                'Дата запроса',
+                'Город',
+                'Температура, °C',
+                'Ветер, м/с',
+                'Давление, мм.рт.ст',
+                'Влажность, %',
+            ])
+
+        ws.append([
+            datetime.datetime.now(),
+            data['name'],
+            data['main']['temp'],
+            f'{wind_direction(data['wind']['deg'])}, {data['wind']['speed']}',
+            round(data['main']['pressure'] * 100 // 133.322),
+            data['main']['humidity'],
+        ])
+        wb.save(filename=FILE_EXCEL)
+
+
 print('*' * 70)
 print("""o(*￣▽￣*)ブ Привет
 Чтобы получить прогноз погоды, напиши название города
@@ -75,3 +106,4 @@ while True:
     else:
         weather = get_weather(q)
         print(get_weather_desc(weather))
+        save_excel(weather)
