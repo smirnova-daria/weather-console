@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 
 import requests
 
@@ -36,6 +36,12 @@ def wind_direction(degrees):
     return directions[index]
 
 
+def pretty_time(timestamp, timezone_offset):
+    tz = datetime.timezone(datetime.timedelta(seconds=timezone_offset))
+    dt = datetime.datetime.fromtimestamp(timestamp, tz)
+    return dt.strftime("%H:%M")
+
+
 def get_weather_desc(data):
     if data['cod'] != 200:
         return data['message'] if 'message' in data else 'Ошибка получения данных :('
@@ -47,8 +53,8 @@ def get_weather_desc(data):
 Ветер {wind_direction(data['wind']['deg'])}, {data['wind']['speed']} м/с 🎐
 Давление {round(data['main']['pressure'] * 100 // 133.322)} мм.рт.ст
 Влажность {data['main']['humidity']}% 💧
-Восход солнца в {datetime.fromtimestamp(data['sys']['sunrise']).strftime("%H:%M")} 🌅
-Закат солнца в {datetime.fromtimestamp(data['sys']['sunset']).strftime("%H:%M")} 🌇
+Восход солнца в {pretty_time(data['sys']['sunrise'], data['timezone'])} 🌅
+Закат солнца в {pretty_time(data['sys']['sunset'], data['timezone'])} 🌇
     """
 
     return desc
