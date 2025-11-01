@@ -47,8 +47,8 @@ def get_weather_desc(data):
 Ветер {wind_direction(data['wind']['deg'])}, {data['wind']['speed']} м/с 🎐
 Давление {round(data['main']['pressure'] * 100 // 133.322)} мм.рт.ст
 Влажность {data['main']['humidity']}% 💧
-Восход солнца в {datetime.fromtimestamp(data['sys']['sunrise'] + data['timezone']).strftime("%H:%M")} 🌅
-Закат солнца в {datetime.fromtimestamp(data['sys']['sunset'] + data['timezone']).strftime("%H:%M")} 🌇
+Восход солнца в {datetime.fromtimestamp(data['sys']['sunrise']).strftime("%H:%M")} 🌅
+Закат солнца в {datetime.fromtimestamp(data['sys']['sunset']).strftime("%H:%M")} 🌇
     """
 
     return desc
